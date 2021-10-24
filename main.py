@@ -5,11 +5,15 @@ def execute():
     while not valid:
         if len(command) > 1 and (command[0].lower() == 'vsfs' or command[0].lower() == 'fs'):
             if command[1] == 'list':
-                content = list_files(command, False)
+                if len(command) > 2:
+                    content = list_files(command, False)
 
-                if content != 'invalid':
-                    print(content)
+                    if content != 'invalid':
+                        print(content)
+                    else:
+                        valid = True
                 else:
+                    print('Invalid list command.')
                     valid = True
 
             elif command[1] == 'copyin':
