@@ -1,9 +1,11 @@
+# main method that captures input from user
 def execute():
     command = input(">").split()
 
     valid = False
     while not valid:
         if len(command) > 1 and (command[0].lower() == 'vsfs' or command[0].lower() == 'fs'):
+            # list of commands and calling its respective methods
             if command[1] == 'list':
                 if len(command) > 2:
                     content = list_files(command, False)
@@ -46,10 +48,12 @@ def execute():
                 if err_catch == 'invalid':
                     valid = True
 
+        # successful execution
         elif len(command) > 0 and command[0] == 'exit':
             print("Exit Success.")
             valid = True
 
+        # capturing errors with graceful output
         else:
             print("Unknown command. Please try again.")
             command = input(">").split()
@@ -63,14 +67,16 @@ def execute():
                 print("Exit Success.")
                 valid = True
 
-
+# command implementation of listing
 def list_files(command: [], add_content: bool) -> str:
     file_names = ''
     content = ''
     return_string = ''
     file_opened = False
+    # open file, check for errors, capture using exceptions
     try:
         fs = open('VSFS.notes', 'r')
+        # getting only names of files and directories
         line = fs.readline().strip('\n')
         if line != 'NOTES V1.0':
             print("Invalid FS format - Must begin with > NOTES V1.0")
@@ -84,6 +90,7 @@ def list_files(command: [], add_content: bool) -> str:
             if line and (line[0] == '@' or line[0] == '='):
                 file_names += line + '\n'
         file_opened = True
+    # exception handling
     except FileNotFoundError:
         print("Invalid VSFS")
     except IOError:
@@ -92,6 +99,7 @@ def list_files(command: [], add_content: bool) -> str:
         if file_opened:
             fs.close()
 
+    # return either only names or names and its content
     if not add_content:
         if file_names == '':
             return_string = 'empty'
@@ -102,8 +110,10 @@ def list_files(command: [], add_content: bool) -> str:
 
     return return_string
 
-
+# copyin command execution
 def copyin(command) -> str:
+
+    # check input validity
     if len(command) != 5:
         print("Invalid VSFS")
         return 'invalid'
@@ -111,6 +121,7 @@ def copyin(command) -> str:
         content = ''
         read_success = False
         filename = command[3] + '.txt'
+        # reading from file, and only adding required content
         check_exist = list_files(command, False).strip('\n').split('@')
         if command[4] in check_exist or command[4] + '\n' in check_exist:
             print("Invalid VSFS")
@@ -126,6 +137,7 @@ def copyin(command) -> str:
                 content += ' ' + line
                 # print(line)
             read_success = True
+        # exception handling
         except FileNotFoundError:
             print("Invalid VSFS")
             return 'invalid'
@@ -134,9 +146,11 @@ def copyin(command) -> str:
             return 'invalid'
         finally:
             if read_success:
+                # close file after use
                 fs.close()
 
         if read_success:
+            # update VSFS if everything is fine
             fs = open("VSFS.notes", "a")
             fs.write("@" + command[4] + '\n')
             fs.write(content + '\n')
@@ -147,11 +161,13 @@ def copyin(command) -> str:
     return 'command success'
 
 
+# implementation for copyout
 def copyout(command) -> str:
     if len(command) != 5:
         print("Invalid VSFS")
         return 'invalid'
 
+    # open file and retrieve what is needed
     elif command[2].lower() == 'fs':
         files = list_files(command, True)
         check_exist = list_files(command, False).strip('\n').split('@')
@@ -180,9 +196,11 @@ def copyout(command) -> str:
             print('Invalid VSFS')
             return 'invalid'
 
+    # return successful operation
     return 'command success'
 
 
+# helper method for creating a new external file
 def transfer_files(content: str, file_name: str):
     opened = False
     new_file = ''
@@ -194,11 +212,13 @@ def transfer_files(content: str, file_name: str):
     except IOError:
         print("Invalid VSFS")
 
+    # only close if successfully opened
     if opened:
         new_file.close()
 
-
+# command implementation for mkdir
 def mkdir(command) -> str:
+    # error handling
     if len(command) != 4:
         print('Invalid VSFS')
         return 'invalid'
@@ -223,7 +243,7 @@ def mkdir(command) -> str:
     elif command[2] != 'FS':
         return 'invalid'
 
-
+# command implementation for rm
 def rm(command) -> str:
     if len(command) != 4:
         print("Invalid remove command.")
@@ -266,7 +286,7 @@ def rm(command) -> str:
         print("Invalid remove command.")
         return 'invalid'
 
-
+# command implementation for rmdir
 def rmdir(command) -> str:
     if len(command) != 4:
         print('invalid remove command.')
@@ -306,7 +326,7 @@ def rmdir(command) -> str:
         fs.write(new_content + '\n')
         fs.close()
 
-
+# command implementation for defrag
 def defrag(command) -> str:
     if len(command) != 3:
         print('Invalid defrag command.')
