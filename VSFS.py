@@ -1,13 +1,15 @@
 # main method that captures input from user
 def execute():
     command = input(">").split()
-
+    ELEMENT_ONE = 1
+    ELEMENT_ZERO = 0
+    VALID_LENGTH = 2
     valid = False
     while not valid:
-        if len(command) > 1 and (command[0].lower() == 'vsfs' or command[0].lower() == 'fs'):
+        if len(command) > ELEMENT_ONE and (command[ELEMENT_ZERO].lower() == 'vsfs' or command[ELEMENT_ZERO].lower() == 'fs'):
             # list of commands and calling its respective methods
-            if command[1] == 'list':
-                if len(command) > 2:
+            if command[ELEMENT_ONE] == 'list':
+                if len(command) > VALID_LENGTH:
                     content = list_files(command, False)
 
                     if content != 'invalid':
@@ -18,38 +20,38 @@ def execute():
                     print('Invalid list command.')
                     valid = True
 
-            elif command[1] == 'copyin':
+            elif command[ELEMENT_ONE] == 'copyin':
                 err_catch = copyin(command)
                 if err_catch == 'invalid':
                     valid = True
 
-            elif command[1] == 'copyout':
+            elif command[ELEMENT_ONE] == 'copyout':
                 err_catch = copyout(command)
                 if err_catch == 'invalid':
                     valid = True
 
-            elif command[1] == 'mkdir':
+            elif command[ELEMENT_ONE] == 'mkdir':
                 err_catch = mkdir(command)
                 if err_catch == 'invalid':
                     valid = True
 
-            elif command[1] == 'rm':
+            elif command[ELEMENT_ONE] == 'rm':
                 err_catch = rm(command)
                 if err_catch == 'invalid':
                     valid = True
 
-            elif command[1] == 'rmdir':
+            elif command[ELEMENT_ONE] == 'rmdir':
                 err_catch = rmdir(command)
                 if err_catch == 'invalid':
                     valid = True
 
-            elif command[1] == 'defrag':
+            elif command[ELEMENT_ONE] == 'defrag':
                 err_catch = defrag(command)
                 if err_catch == 'invalid':
                     valid = True
 
         # successful execution
-        elif len(command) > 0 and command[0] == 'exit':
+        elif len(command) > ELEMENT_ZERO and command[ELEMENT_ZERO] == 'exit':
             print("Exit Success.")
             valid = True
 
@@ -57,18 +59,19 @@ def execute():
         else:
             print("Unknown command. Please try again.")
             command = input(">").split()
-            if len(command) > 0 and command[0] == 'exit':
+            if len(command) > ELEMENT_ZERO and command[ELEMENT_ZERO] == 'exit':
                 print("Exit Success.")
                 valid = True
 
         if not valid:
             command = input(">").split()
-            if len(command) > 0 and command[0] == 'exit':
+            if len(command) > ELEMENT_ZERO and command[ELEMENT_ZERO] == 'exit':
                 print("Exit Success.")
                 valid = True
 
 # command implementation of listing
 def list_files(command: [], add_content: bool) -> str:
+    ELEMENT_ZERO = 0
     file_names = ''
     content = ''
     return_string = ''
@@ -82,12 +85,12 @@ def list_files(command: [], add_content: bool) -> str:
             print("Invalid FS format - Must begin with > NOTES V1.0")
             return 'invalid'
         content += line + '\n'
-        if line and (line[0] == '@' or line[0] == '='):
+        if line and (line[ELEMENT_ZERO] == '@' or line[ELEMENT_ZERO] == '='):
             file_names += line + '\n'
         while line != '':
             line = fs.readline().strip('\n')
             content += line + '\n'
-            if line and (line[0] == '@' or line[0] == '='):
+            if line and (line[ELEMENT_ZERO] == '@' or line[ELEMENT_ZERO] == '='):
                 file_names += line + '\n'
         file_opened = True
     # exception handling
@@ -112,18 +115,21 @@ def list_files(command: [], add_content: bool) -> str:
 
 # copyin command execution
 def copyin(command) -> str:
-
+    TOTAL_LENGTH = 5
+    ELEMENT_TWO = 2
+    ELEMENT_THREE = 3
+    ELEMENT_FOUR = 4
     # check input validity
-    if len(command) != 5:
+    if len(command) != TOTAL_LENGTH:
         print("Invalid VSFS")
         return 'invalid'
-    elif command[2].lower() == 'fs':
+    elif command[ELEMENT_TWO].lower() == 'fs':
         content = ''
         read_success = False
-        filename = command[3] + '.txt'
+        filename = command[ELEMENT_THREE] + '.txt'
         # reading from file, and only adding required content
         check_exist = list_files(command, False).strip('\n').split('@')
-        if command[4] in check_exist or command[4] + '\n' in check_exist:
+        if command[ELEMENT_FOUR ] in check_exist or command[ELEMENT_FOUR ] + '\n' in check_exist:
             print("Invalid VSFS")
             return 'invalid'
         try:
@@ -152,10 +158,10 @@ def copyin(command) -> str:
         if read_success:
             # update VSFS if everything is fine
             fs = open("VSFS.notes", "a")
-            fs.write("@" + command[4] + '\n')
+            fs.write("@" + command[ELEMENT_FOUR] + '\n')
             fs.write(content + '\n')
             fs.close()
-    elif command[2].lower() != 'fs':
+    elif command[ELEMENT_TWO].lower() != 'fs':
         print('Invalid VSFS')
         return 'invalid'
     return 'command success'
@@ -163,7 +169,9 @@ def copyin(command) -> str:
 
 # implementation for copyout
 def copyout(command) -> str:
-    if len(command) != 5:
+    VALID_LENGTH = 5
+    ARR_LENGTH = 1
+    if len(command) != VALID_LENGTH:
         print("Invalid VSFS")
         return 'invalid'
 
@@ -186,7 +194,7 @@ def copyout(command) -> str:
                         start_copy = False
                 else:
                     start_copy = False
-                if index_line == len(copy_items) - 1:
+                if index_line == len(copy_items) - ARR_LENGTH:
                     start_copy = False
 
                 if start_copy:
@@ -218,11 +226,12 @@ def transfer_files(content: str, file_name: str):
 
 # command implementation for mkdir
 def mkdir(command) -> str:
+    VALID_LENGTH = 4
     # error handling
-    if len(command) != 4:
+    if len(command) != VALID_LENGTH:
         print('Invalid VSFS')
         return 'invalid'
-    elif command[2] == 'FS' and len(command) == 4:
+    elif command[2] == 'FS' and len(command) == VALID_LENGTH:
         file_opened = False
         check_exist = list_files(command, False).split('\n')
         try:
@@ -245,10 +254,11 @@ def mkdir(command) -> str:
 
 # command implementation for rm
 def rm(command) -> str:
-    if len(command) != 4:
+    VALID_LENGTH = 4
+    if len(command) != VALID_LENGTH:
         print("Invalid remove command.")
         return 'invalid'
-    elif len(command) == 4 and command[2] == 'FS':
+    elif len(command) == VALID_LENGTH and command[2] == 'FS':
         new_content = ''
         continue_copy = True
         initial = True
@@ -288,10 +298,11 @@ def rm(command) -> str:
 
 # command implementation for rmdir
 def rmdir(command) -> str:
-    if len(command) != 4:
+    VALID_LENGTH = 4
+    if len(command) != VALID_LENGTH:
         print('invalid remove command.')
         return 'invalid'
-    elif len(command) == 4 and command[2] == 'FS':
+    elif len(command) == VALID_LENGTH and command[2] == 'FS':
         new_content = ''
         continue_copy = True
         initial = True
@@ -328,10 +339,11 @@ def rmdir(command) -> str:
 
 # command implementation for defrag
 def defrag(command) -> str:
-    if len(command) != 3:
+    VALID_LENGTH = 3
+    if len(command) != VALID_LENGTH:
         print('Invalid defrag command.')
         return 'invalid'
-    elif len(command) == 3 and command[2] == 'FS':
+    elif len(command) == VALID_LENGTH and command[2] == 'FS':
         content = list_files(command, True).split('\n')
         new_content = ''
         for index in range(len(content)):
