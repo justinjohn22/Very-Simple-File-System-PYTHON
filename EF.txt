@@ -1,0 +1,2 @@
+Hi, this is an external file!
+and this is more text!
